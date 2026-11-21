@@ -25,6 +25,9 @@ This repository contains the DevOps setup for the Virto Commerce application, in
 #### Admin Panel
 ![Backend Admin Panel](docs/images/backend.png)
 
+### System
+![System](docs/images/system.png)
+
 ## Repository Structure
 
 ```text
@@ -36,7 +39,8 @@ virto-devops/
 │       ├── catalog.png
 │       ├── product.png
 │       ├── checkout.png
-│       └── backend.png
+│       ├── backend.png
+│       └── system.png
 ├── scripts/
 ├── .env.example
 ├── .gitignore
