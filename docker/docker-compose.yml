@@ -1,0 +1,76 @@
+name: virto
+
+services:
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  platform:
+    image: ${PLATFORM_IMAGE}
+    platform: linux/amd64
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${PLATFORM_PORT}:80"
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      DatabaseProvider: PostgreSql
+      ConnectionStrings__VirtoCommerce: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database=${POSTGRES_DB};"
+      VirtoCommerce__AllowInsecureHttp: "true"
+      Search__Provider: Lucene
+    volumes:
+      - modules_data:/opt/virtocommerce/platform/modules
+      - app_data:/opt/virtocommerce/platform/App_Data
+      - cms_content_data:/opt/virtocommerce/platform/wwwroot/cms-content
+      - dataprotection_keys:/root/.aspnet
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - |
+          exec 3<>/dev/tcp/127.0.0.1/80
+          printf 'GET / HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3
+          head -n1 <&3 | grep -qE 'HTTP/1\.[01] [23]'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VC_FRONTEND_REF: ${VC_FRONTEND_REF}
+    image: virto-frontend:local
+    restart: unless-stopped
+    depends_on:
+      platform:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  modules_data:
+  app_data:
+  cms_content_data:
+  dataprotection_keys:
