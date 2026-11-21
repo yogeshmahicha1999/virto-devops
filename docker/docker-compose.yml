@@ -31,9 +31,11 @@ services:
       ConnectionStrings__VirtoCommerce: "User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database=${POSTGRES_DB};"
       VirtoCommerce__AllowInsecureHttp: "true"
       Search__Provider: Lucene
+      Assets__FileSystem__PublicUrl: http://localhost:${PLATFORM_PORT}/assets/
     volumes:
       - modules_data:/opt/virtocommerce/platform/modules
       - app_data:/opt/virtocommerce/platform/App_Data
+      - assets_data:/opt/virtocommerce/platform/wwwroot/assets
       - cms_content_data:/opt/virtocommerce/platform/wwwroot/cms-content
       - dataprotection_keys:/root/.aspnet
     healthcheck:
@@ -72,5 +74,6 @@ volumes:
   postgres_data:
   modules_data:
   app_data:
+  assets_data:
   cms_content_data:
   dataprotection_keys:
