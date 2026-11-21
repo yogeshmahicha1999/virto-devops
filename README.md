@@ -8,9 +8,21 @@ This repository contains the DevOps setup for the Virto Commerce application, in
 
 ### Frontend
 
+#### Home Page
 ![Virto Frontend](docs/images/frontend.png)
 
+#### Catalog Page
+![Virto Frontend](docs/images/catalog.png)
+
+#### Product Page
+![Virto Frontend](docs/images/product.png)
+
+#### CheckOut Page
+![Virto Frontend](docs/images/catalog.png)
+
 ### Backend
+
+#### AdminPanel Page
 
 ![Virto Backend](docs/images/backend.png)
 
